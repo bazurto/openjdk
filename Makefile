@@ -1,15 +1,16 @@
-version=16.0.2
+version=17
 name=openjdk
 
+
 # Edit
-linux_orig_url=https://download.java.net/java/GA/jdk16.0.2/d4a915d82b4c4fbb9bde534da945d746/7/GPL/openjdk-$(version)_linux-x64_bin.tar.gz
+linux_orig_url=https://download.java.net/java/GA/jdk17/0d483333a00540d886896bac774ff48b/35/GPL/openjdk-$(version)_linux-x64_bin.tar.gz
 linux_orig_zip_name=openjdk-$(version)_linux-x64_bin.tar.gz
 
-windows_orig_url=https://download.java.net/java/GA/jdk16.0.2/d4a915d82b4c4fbb9bde534da945d746/7/GPL/openjdk-$(version)_windows-x64_bin.zip
+windows_orig_url=https://download.java.net/java/GA/jdk17/0d483333a00540d886896bac774ff48b/35/GPL/openjdk-$(version)_windows-x64_bin.zip
 windows_orig_zip_name=openjdk-$(version)_windows-x64_bin.zip
 
-darwin_orig_url=https://download.java.net/java/GA/jdk16.0.2/d4a915d82b4c4fbb9bde534da945d746/7/GPL/openjdk-$(version)_osx-x64_bin.tar.gz
-darwin_orig_zip_name=openjdk-$(version)_osx-x64_bin.tar.gz
+darwin_orig_url=https://download.java.net/java/GA/jdk17/0d483333a00540d886896bac774ff48b/35/GPL/openjdk-$(version)_macos-x64_bin.tar.gz 
+darwin_orig_zip_name=openjdk-$(version)_macos-x64_bin.tar.gz
 # Edit end
 
 
