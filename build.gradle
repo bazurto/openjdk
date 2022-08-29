@@ -1,0 +1,144 @@
+ext {
+    ver = project.getProperty("ver")
+    // https://adoptium.net/temurin/releases
+    versionMap = [
+        "17.0.4.1" : [
+            "linux-amd64" : [
+                url : "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.4.1%2B1/OpenJDK17U-jdk_x64_linux_hotspot_17.0.4.1_1.tar.gz",
+                downloadFileName : "OpenJDK17U-jdk_x64_linux_hotspot_17.0.4.1_1.tar.gz",
+            ],
+            "mac-amd64" : [
+                url : "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.4.1%2B1/OpenJDK17U-jdk_x64_mac_hotspot_17.0.4.1_1.tar.gz",
+                downloadFileName : "OpenJDK17U-jdk_x64_mac_hotspot_17.0.4.1_1.tar.gz",
+            ],
+            "windows-amd64" : [
+                url: "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.4.1%2B1/OpenJDK17U-jdk_x64_windows_hotspot_17.0.4.1_1.zip",
+                downloadFileName: "OpenJDK17U-jdk_x64_windows_hotspot_17.0.4.1_1.zip",
+            ],
+        ]
+    ]
+}
+
+task release(dependsOn: ['asset']) {
+    doLast {
+        def assetList = []
+        versionMap[ver].each { platform, vals ->
+            def assetName = "openjdk-${platform}-$ver"
+            def assetFileName = "${buildDir}/downloaded/${assetName}.tgz"
+            assetList += assetFileName
+        }
+        shell("gh release create --generate-notes -t v$ver v$ver " + assetList.join(" "))
+    }
+}
+
+task asset(dependsOn: ['downloadFile']) {
+    doLast {
+        versionMap[ver].each { platform, vals ->
+            def downloadFileName = vals['downloadFileName']
+            def assetName = "openjdk-${platform}-$ver"
+            def assetDir = "${buildDir}/downloaded/$assetName"
+            def assetFileName = "${buildDir}/downloaded/${assetName}.tgz"
+            def fileName = "${buildDir}/downloaded/${downloadFileName}"
+            def isMac = false
+            if (platform.startsWith("mac")) {
+                isMac = true
+            }
+
+            // uncompress to asset dir
+            if (!file(assetDir).exists()) {
+                if (fileName.contains('.zip')) { // unzip windows
+                    shell(cmd:"unzip $fileName", dir:"${buildDir}/downloaded" )
+                } else {
+                    shell(cmd:"tar xvfz $fileName", dir:"${buildDir}/downloaded" )
+                }
+                shell(cmd:"mv jdk-17.0.4.1+1 $assetDir", dir:"${buildDir}/downloaded")
+            }
+
+            //
+            writeBzFile("$assetDir/.bz", isMac)
+
+            // create asset tgz
+            if (!file(assetFileName).exists()) {
+                shell(cmd:"tar cvfz ${assetFileName}.tmp .", dir: assetDir)
+                shell(cmd:"mv ${assetFileName}.tmp ${assetFileName}", dir: "${buildDir}/downloaded")
+            }
+        }
+    }
+}
+
+
+
+task downloadFile() {
+    doLast {
+        versionMap[ver].each { platform, vals ->
+            def downloadUrl = vals['url']
+            def downloadFileName = vals['downloadFileName']
+            if (!file("${buildDir}/downloaded/${downloadFileName}").exists()) {
+                shell(cmd:"mkdir -p ${buildDir}/downloaded")
+                shell(cmd:"wget -O ${buildDir}/downloaded/${downloadFileName}.tmp ${downloadUrl}")
+                shell(cmd:"mv ${buildDir}/downloaded/${downloadFileName}.tmp ${buildDir}/downloaded/${downloadFileName}")
+            }
+        }
+    }
+}
+
+/*
+task test() {
+    doLast {
+        def env = System.env.entrySet().stream().map { "$it.key=$it.value"  }.collect().asList()
+        env.each 
+            println "$it #"
+        }
+    }
+}
+*/
+
+def shell(opts = [:]) {
+    if (!opts.dir) { opts.dir = project.buildDir }
+    if (!opts.env) { opts.env = System.env.entrySet().stream().map { "$it.key=$it.value"  }.collect().asList() }
+    opts.dir = file(opts.dir)
+
+    def proc = opts.cmd.execute(opts.env, opts.dir)
+    proc.consumeProcessOutput(System.out, System.err)
+    if (proc.waitFor() != 0) {
+        throw new RuntimeException("command $cmd returned error")
+    }
+}
+
+
+
+/*
+release: $(asset)
+	gh release create --generate-notes -t v$(VERSION) v$(VERSION) $(asset)
+
+$(downloadFileName):
+
+.PHONY: clean
+clean:
+	rm -fr $(downloadFileName)
+	rm -fr $(asset)
+	rm -fr $(extracted)
+
+*/
+
+
+def writeBzFile(f, isMac) {
+    def macDir = ""
+    if (isMac) {
+        macDir = "/Contents/Home"
+    }
+
+def contents = '''
+deps = []
+
+export {
+    JAVA_HOME = "${DIR}'''+macDir+'''"
+}
+
+desc {
+    binDir = "${JAVA_HOME}/bin"
+}
+
+'''
+    file(f).text = contents
+}
