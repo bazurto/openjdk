@@ -1,3 +1,6 @@
+
+// run: gradle -Pver=17.0.4.1 release
+
 ext {
     ver = project.getProperty("ver")
     // https://adoptium.net/temurin/releases
