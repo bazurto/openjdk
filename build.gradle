@@ -85,19 +85,8 @@ task downloadFile() {
     }
 }
 
-/*
-task test() {
-    doLast {
-        def env = System.env.entrySet().stream().map { "$it.key=$it.value"  }.collect().asList()
-        env.each 
-            println "$it #"
-        }
-    }
-}
-*/
-
 def shell(opts = [:]) {
-    if (!opts.dir) { opts.dir = project.buildDir }
+    if (!opts.dir) { opts.dir = project.projectDir }
     if (!opts.env) { opts.env = System.env.entrySet().stream().map { "$it.key=$it.value"  }.collect().asList() }
     opts.dir = file(opts.dir)
 
@@ -107,23 +96,6 @@ def shell(opts = [:]) {
         throw new RuntimeException("command $cmd returned error")
     }
 }
-
-
-
-/*
-release: $(asset)
-	gh release create --generate-notes -t v$(VERSION) v$(VERSION) $(asset)
-
-$(downloadFileName):
-
-.PHONY: clean
-clean:
-	rm -fr $(downloadFileName)
-	rm -fr $(asset)
-	rm -fr $(extracted)
-
-*/
-
 
 def writeBzFile(f, isMac) {
     def macDir = ""
