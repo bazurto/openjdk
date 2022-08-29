@@ -30,7 +30,7 @@ task release(dependsOn: ['asset']) {
             def assetFileName = "${buildDir}/downloaded/${assetName}.tgz"
             assetList += assetFileName
         }
-        shell("gh release create --generate-notes -t v$ver v$ver " + assetList.join(" "))
+        shell(cmd: "gh release create --generate-notes -t v$ver v$ver " + assetList.join(" "))
     }
 }
 
