@@ -122,7 +122,7 @@ def defineCreateAssetTask(asset) {
                 if (fileName.toString().contains('.zip')) { // unzip windows
                     shell(cmd:"unzip $fileName", dir: assetDirTmp )
                 } else {
-                    shell(cmd:"tar xvfz $fileName", dir: assetDirTmp )
+                    shell(cmd:"tar xfz $fileName", dir: assetDirTmp )
                 }
                 def files = assetDirTmp.listFiles()
                 def originalDirNameFromZip;
