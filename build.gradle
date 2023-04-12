@@ -105,7 +105,8 @@ def defineReleaseTask(major, releaseVersion) {
             shell(cmd: "gh release delete -y v$releaseVersion", throw: false)
             shell(cmd: "git push origin :refs/tags/v$releaseVersion", throw: false)
             shell(cmd: "git tag -d v$releaseVersion", throw: false)
-            shell(cmd: "gh release create -d --generate-notes -t v$releaseVersion v$releaseVersion")
+            //shell(cmd: "gh release create -d --generate-notes -t v$releaseVersion v$releaseVersion")
+            shell(cmd: "gh release create --generate-notes -t v$releaseVersion v$releaseVersion")
         }
     }
 }
