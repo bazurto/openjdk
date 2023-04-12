@@ -34,23 +34,7 @@ ext {
 }
 
 task release() {
-    doLast {
-        /*
-        def assetList = []
-        (new groovy.json.JsonSlurper().parseText(file('.releases.txt').text)).each { asset ->
-            def platform = osArch(asset.name)
-            def ver = newVersion(asset.name)
-            def assetName = "openjdk-${platform}-v$ver"
-            def assetFileName = "${buildDir}/downloaded/${assetName}.tgz"
-
-            shell(cmd: "gh release delete -y v$ver", throw: false)
-            shell(cmd: "git push origin :refs/tags/v$ver", throw: false)
-            shell(cmd: "git tag -d v$ver", throw: false)
-            shell(cmd: "gh release create -d --generate-notes -t v$ver v$ver ")
-            shell(cmd: "gh release upload v$ver $assetFileName")
-        }
-        */
-    }
+    doLast { /* nothing to do*/ }
 }
 
 task clean() {
@@ -63,7 +47,7 @@ versions.each { major ->
     releaseNfo["$major"].each { versionStr, assets ->
 
     def releaseTask = defineReleaseTask(major, versionStr);
-    configure(release) { dependsOn += releaseTask.name; println "release depeonds on ${releaseTask.name}" }
+    configure(release) { dependsOn += releaseTask.name; }
     def uploadsTask = tasks.create(name: _taskName("uploads_$versionStr")) {}
     tasks.named(releaseTask.name) { finalizedBy(uploadsTask.name) }
 
@@ -224,95 +208,15 @@ task update() {
                 major: major,
             ]
 
-            /*
-            versionMap += [
-                major: major,
-                version: newVersion(asset.name).toString(),
-                repoName: repoName,
-                name: asset.name,
-                url: asset.getBrowserDownloadUrl(),
-            ];
-            */
         }) // findRelease
         file('.releases.txt').text = new groovy.json.JsonBuilder(versionMap).toPrettyString();
     } // doLast
 }
 
-
-
-
 def _taskName(name) {
     return name.replace('-', '_')
     .replace('.', '_').toLowerCase();
 }
-
-/*
-task release(dependsOn: ['asset']) {
-    doLast {
-        def assetList = []
-        versionMap[ver].each { platform, vals ->
-            def assetName = "openjdk-${platform}-v$ver"
-            def assetFileName = "${buildDir}/downloaded/${assetName}.tgz"
-            assetList += assetFileName
-        }
-        shell(cmd: "gh release delete -y v$ver", throw: false)
-        shell(cmd: "git push origin :refs/tags/v$ver", throw: false)
-        shell(cmd: "git tag -d v$ver", throw: false)
-        shell(cmd: "gh release create --generate-notes -t v$ver v$ver " + assetList.join(" "))
-    }
-}
-
-task asset(dependsOn: ['downloadFile']) {
-    doLast {
-        versionMap[ver].each { platform, vals ->
-            def downloadFileName = getFilePart(vals['url'])
-            def assetName = "openjdk-${platform}-v$ver"
-            def assetDir = "${buildDir}/downloaded/$assetName"
-            def assetFileName = "${buildDir}/downloaded/${assetName}.tgz"
-            def fileName = "${buildDir}/downloaded/${downloadFileName}"
-            def isMac = false
-            if (platform.startsWith("darwin")) {
-                isMac = true
-            }
-
-            // uncompress to asset dir
-            if (!file(assetDir).exists()) {
-                if (fileName.contains('.zip')) { // unzip windows
-                    shell(cmd:"unzip $fileName", dir:"${buildDir}/downloaded" )
-                } else {
-                    shell(cmd:"tar xvfz $fileName", dir:"${buildDir}/downloaded" )
-                }
-                shell(cmd:"mv jdk-17.0.4.1+1 $assetDir", dir:"${buildDir}/downloaded")
-            }
-
-            //
-            writeBzFile("$assetDir/.bz", isMac)
-            writeBzFile("$assetDir/.bz.lock", isMac)
-
-            // create asset tgz
-            if (!file(assetFileName).exists()) {
-                shell(cmd:"tar cvfz ${assetFileName}.tmp .", dir: assetDir)
-                shell(cmd:"mv ${assetFileName}.tmp ${assetFileName}", dir: "${buildDir}/downloaded")
-            }
-        }
-    }
-}
-
-task downloadFile() {
-    doLast {
-        versionMap[ver].each { platform, vals ->
-            def downloadUrl = vals['url']
-            def downloadFileName = getFilePart(vals['url'])
-            if (!file("${buildDir}/downloaded/${downloadFileName}").exists()) {
-                shell(cmd:"mkdir -p ${buildDir}/downloaded")
-                shell(cmd:"wget -O ${buildDir}/downloaded/${downloadFileName}.tmp ${downloadUrl}")
-                shell(cmd:"mv ${buildDir}/downloaded/${downloadFileName}.tmp ${buildDir}/downloaded/${downloadFileName}")
-            }
-        }
-    }
-}
-*/
-
 
 def shell(opts = [:]) {
     if (!opts.dir) { opts.dir = project.projectDir }
