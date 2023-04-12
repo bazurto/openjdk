@@ -86,7 +86,7 @@ versions.each { major ->
 def defineReleaseTask(major, releaseVersion) {
     tasks.create(name: _taskName("release_V_$releaseVersion")) {
         doLast {
-            shell(cmd: "gh release delete -y v$releaseVersion", throw: false)
+            shell(cmd: "gh release delete --cleanup-tag -y v$releaseVersion", throw: false)
             shell(cmd: "git push origin :refs/tags/v$releaseVersion", throw: false)
             shell(cmd: "git tag -d v$releaseVersion", throw: false)
             //shell(cmd: "gh release create -d --generate-notes -t v$releaseVersion v$releaseVersion")
