@@ -21,4 +21,4 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: Build
-        run: for i in $(./gradlew tasks | grep create_asset_ | awk '{print $1}'); do ./gradlew $i; done
+        run: ./gradlew buildAll

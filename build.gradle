@@ -37,6 +37,10 @@ task release() {
     doLast { /* nothing to do*/ }
 }
 
+task buildAll() {
+    doLast { /* nothing to do*/ }
+}
+
 task clean() {
     doLast {
         delete buildDir
@@ -57,31 +61,15 @@ versions.each { major ->
 
             //
             def createAssetTask =  defineCreateAssetTask(asset);
-            configure(createAssetTask) {   
-                dependsOn += downloadAssetTask.name
-            }
+            configure(createAssetTask) { dependsOn += downloadAssetTask.name }
 
             def uploadAssetTask = defineUploadTask(versionStr, asset);
-            configure(uploadAssetTask) {   
-                dependsOn += createAssetTask.name
-            }
-            configure(uploadsTask) {   
-                dependsOn += uploadAssetTask.name
-            }
+            configure(buildAll) { dependsOn += createAssetTask.name }
+            configure(uploadAssetTask) { dependsOn += createAssetTask.name }
+            configure(uploadsTask) { dependsOn += uploadAssetTask.name }
         } // assets
     }
 }
-
-/*
-(new groovy.json.JsonSlurper().parseText(file('.releases.txt').text)).each { major, majorNfo ->
-    majorNfo.each {versionStr, assets ->
-        // assets
-        assets.each { asset ->
-
-        }
-    } // each majorNfo
-} // each
-*/
 
 def defineReleaseTask(major, releaseVersion) {
     tasks.create(name: _taskName("release_V_$releaseVersion")) {
