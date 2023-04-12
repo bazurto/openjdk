@@ -145,7 +145,7 @@ def defineCreateAssetTask(asset) {
 
             // create asset tgz
             if (!file(assetFileName).exists()) {
-                shell(cmd:"tar cvfz ${assetFileName}.tmp .", dir: assetDir)
+                shell(cmd:"tar cfz ${assetFileName}.tmp .", dir: assetDir)
                 shell(cmd:"mv ${assetFileName}.tmp ${assetFileName}", dir: "${buildDir}/downloaded")
             }
         }
