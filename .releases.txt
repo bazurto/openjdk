@@ -1,0 +1,222 @@
+{
+    "8": {
+        "8.362.09": [
+            {
+                "repoName": "adoptium/temurin8-binaries",
+                "name": "OpenJDK8U-jdk_aarch64_linux_hotspot_8u362b09.tar.gz",
+                "url": "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u362-b09/OpenJDK8U-jdk_aarch64_linux_hotspot_8u362b09.tar.gz",
+                "version": "8.362.09",
+                "major": 8
+            },
+            {
+                "repoName": "adoptium/temurin8-binaries",
+                "name": "OpenJDK8U-jdk_x64_linux_hotspot_8u362b09.tar.gz",
+                "url": "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u362-b09/OpenJDK8U-jdk_x64_linux_hotspot_8u362b09.tar.gz",
+                "version": "8.362.09",
+                "major": 8
+            },
+            {
+                "repoName": "adoptium/temurin8-binaries",
+                "name": "OpenJDK8U-jdk_x64_mac_hotspot_8u362b09.tar.gz",
+                "url": "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u362-b09/OpenJDK8U-jdk_x64_mac_hotspot_8u362b09.tar.gz",
+                "version": "8.362.09",
+                "major": 8
+            },
+            {
+                "repoName": "adoptium/temurin8-binaries",
+                "name": "OpenJDK8U-jdk_x64_windows_hotspot_8u362b09.zip",
+                "url": "https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u362-b09/OpenJDK8U-jdk_x64_windows_hotspot_8u362b09.zip",
+                "version": "8.362.09",
+                "major": 8
+            }
+        ]
+    },
+    "11": {
+        "11.0.18.10": [
+            {
+                "repoName": "adoptium/temurin11-binaries",
+                "name": "OpenJDK11U-jdk_aarch64_linux_hotspot_11.0.18_10.tar.gz",
+                "url": "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.18%2B10/OpenJDK11U-jdk_aarch64_linux_hotspot_11.0.18_10.tar.gz",
+                "version": "11.0.18.10",
+                "major": 11
+            },
+            {
+                "repoName": "adoptium/temurin11-binaries",
+                "name": "OpenJDK11U-jdk_aarch64_mac_hotspot_11.0.18_10.tar.gz",
+                "url": "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.18%2B10/OpenJDK11U-jdk_aarch64_mac_hotspot_11.0.18_10.tar.gz",
+                "version": "11.0.18.10",
+                "major": 11
+            },
+            {
+                "repoName": "adoptium/temurin11-binaries",
+                "name": "OpenJDK11U-jdk_x64_linux_hotspot_11.0.18_10.tar.gz",
+                "url": "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.18%2B10/OpenJDK11U-jdk_x64_linux_hotspot_11.0.18_10.tar.gz",
+                "version": "11.0.18.10",
+                "major": 11
+            },
+            {
+                "repoName": "adoptium/temurin11-binaries",
+                "name": "OpenJDK11U-jdk_x64_mac_hotspot_11.0.18_10.tar.gz",
+                "url": "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.18%2B10/OpenJDK11U-jdk_x64_mac_hotspot_11.0.18_10.tar.gz",
+                "version": "11.0.18.10",
+                "major": 11
+            },
+            {
+                "repoName": "adoptium/temurin11-binaries",
+                "name": "OpenJDK11U-jdk_x64_windows_hotspot_11.0.18_10.zip",
+                "url": "https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.18%2B10/OpenJDK11U-jdk_x64_windows_hotspot_11.0.18_10.zip",
+                "version": "11.0.18.10",
+                "major": 11
+            }
+        ]
+    },
+    "16": {
+        "16.0.2.7": [
+            {
+                "repoName": "adoptium/temurin16-binaries",
+                "name": "OpenJDK16U-jdk_aarch64_linux_hotspot_16.0.2_7.tar.gz",
+                "url": "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_aarch64_linux_hotspot_16.0.2_7.tar.gz",
+                "version": "16.0.2.7",
+                "major": 16
+            },
+            {
+                "repoName": "adoptium/temurin16-binaries",
+                "name": "OpenJDK16U-jdk_x64_linux_hotspot_16.0.2_7.tar.gz",
+                "url": "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x64_linux_hotspot_16.0.2_7.tar.gz",
+                "version": "16.0.2.7",
+                "major": 16
+            },
+            {
+                "repoName": "adoptium/temurin16-binaries",
+                "name": "OpenJDK16U-jdk_x64_mac_hotspot_16.0.2_7.tar.gz",
+                "url": "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x64_mac_hotspot_16.0.2_7.tar.gz",
+                "version": "16.0.2.7",
+                "major": 16
+            },
+            {
+                "repoName": "adoptium/temurin16-binaries",
+                "name": "OpenJDK16U-jdk_x64_windows_hotspot_16.0.2_7.zip",
+                "url": "https://github.com/adoptium/temurin16-binaries/releases/download/jdk-16.0.2%2B7/OpenJDK16U-jdk_x64_windows_hotspot_16.0.2_7.zip",
+                "version": "16.0.2.7",
+                "major": 16
+            }
+        ]
+    },
+    "17": {
+        "17.0.6.10": [
+            {
+                "repoName": "adoptium/temurin17-binaries",
+                "name": "OpenJDK17U-jdk_aarch64_linux_hotspot_17.0.6_10.tar.gz",
+                "url": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.6%2B10/OpenJDK17U-jdk_aarch64_linux_hotspot_17.0.6_10.tar.gz",
+                "version": "17.0.6.10",
+                "major": 17
+            },
+            {
+                "repoName": "adoptium/temurin17-binaries",
+                "name": "OpenJDK17U-jdk_aarch64_mac_hotspot_17.0.6_10.tar.gz",
+                "url": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.6%2B10/OpenJDK17U-jdk_aarch64_mac_hotspot_17.0.6_10.tar.gz",
+                "version": "17.0.6.10",
+                "major": 17
+            },
+            {
+                "repoName": "adoptium/temurin17-binaries",
+                "name": "OpenJDK17U-jdk_x64_linux_hotspot_17.0.6_10.tar.gz",
+                "url": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.6%2B10/OpenJDK17U-jdk_x64_linux_hotspot_17.0.6_10.tar.gz",
+                "version": "17.0.6.10",
+                "major": 17
+            },
+            {
+                "repoName": "adoptium/temurin17-binaries",
+                "name": "OpenJDK17U-jdk_x64_mac_hotspot_17.0.6_10.tar.gz",
+                "url": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.6%2B10/OpenJDK17U-jdk_x64_mac_hotspot_17.0.6_10.tar.gz",
+                "version": "17.0.6.10",
+                "major": 17
+            },
+            {
+                "repoName": "adoptium/temurin17-binaries",
+                "name": "OpenJDK17U-jdk_x64_windows_hotspot_17.0.6_10.zip",
+                "url": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.6%2B10/OpenJDK17U-jdk_x64_windows_hotspot_17.0.6_10.zip",
+                "version": "17.0.6.10",
+                "major": 17
+            }
+        ]
+    },
+    "19": {
+        "19.0.2.7": [
+            {
+                "repoName": "adoptium/temurin19-binaries",
+                "name": "OpenJDK19U-jdk_aarch64_linux_hotspot_19.0.2_7.tar.gz",
+                "url": "https://github.com/adoptium/temurin19-binaries/releases/download/jdk-19.0.2%2B7/OpenJDK19U-jdk_aarch64_linux_hotspot_19.0.2_7.tar.gz",
+                "version": "19.0.2.7",
+                "major": 19
+            },
+            {
+                "repoName": "adoptium/temurin19-binaries",
+                "name": "OpenJDK19U-jdk_aarch64_mac_hotspot_19.0.2_7.tar.gz",
+                "url": "https://github.com/adoptium/temurin19-binaries/releases/download/jdk-19.0.2%2B7/OpenJDK19U-jdk_aarch64_mac_hotspot_19.0.2_7.tar.gz",
+                "version": "19.0.2.7",
+                "major": 19
+            },
+            {
+                "repoName": "adoptium/temurin19-binaries",
+                "name": "OpenJDK19U-jdk_x64_linux_hotspot_19.0.2_7.tar.gz",
+                "url": "https://github.com/adoptium/temurin19-binaries/releases/download/jdk-19.0.2%2B7/OpenJDK19U-jdk_x64_linux_hotspot_19.0.2_7.tar.gz",
+                "version": "19.0.2.7",
+                "major": 19
+            },
+            {
+                "repoName": "adoptium/temurin19-binaries",
+                "name": "OpenJDK19U-jdk_x64_mac_hotspot_19.0.2_7.tar.gz",
+                "url": "https://github.com/adoptium/temurin19-binaries/releases/download/jdk-19.0.2%2B7/OpenJDK19U-jdk_x64_mac_hotspot_19.0.2_7.tar.gz",
+                "version": "19.0.2.7",
+                "major": 19
+            },
+            {
+                "repoName": "adoptium/temurin19-binaries",
+                "name": "OpenJDK19U-jdk_x64_windows_hotspot_19.0.2_7.zip",
+                "url": "https://github.com/adoptium/temurin19-binaries/releases/download/jdk-19.0.2%2B7/OpenJDK19U-jdk_x64_windows_hotspot_19.0.2_7.zip",
+                "version": "19.0.2.7",
+                "major": 19
+            }
+        ]
+    },
+    "20": {
+        "20.36.0": [
+            {
+                "repoName": "adoptium/temurin20-binaries",
+                "name": "OpenJDK20U-jdk_aarch64_linux_hotspot_20_36.tar.gz",
+                "url": "https://github.com/adoptium/temurin20-binaries/releases/download/jdk-20%2B36/OpenJDK20U-jdk_aarch64_linux_hotspot_20_36.tar.gz",
+                "version": "20.36.0",
+                "major": 20
+            },
+            {
+                "repoName": "adoptium/temurin20-binaries",
+                "name": "OpenJDK20U-jdk_aarch64_mac_hotspot_20_36.tar.gz",
+                "url": "https://github.com/adoptium/temurin20-binaries/releases/download/jdk-20%2B36/OpenJDK20U-jdk_aarch64_mac_hotspot_20_36.tar.gz",
+                "version": "20.36.0",
+                "major": 20
+            },
+            {
+                "repoName": "adoptium/temurin20-binaries",
+                "name": "OpenJDK20U-jdk_x64_linux_hotspot_20_36.tar.gz",
+                "url": "https://github.com/adoptium/temurin20-binaries/releases/download/jdk-20%2B36/OpenJDK20U-jdk_x64_linux_hotspot_20_36.tar.gz",
+                "version": "20.36.0",
+                "major": 20
+            },
+            {
+                "repoName": "adoptium/temurin20-binaries",
+                "name": "OpenJDK20U-jdk_x64_mac_hotspot_20_36.tar.gz",
+                "url": "https://github.com/adoptium/temurin20-binaries/releases/download/jdk-20%2B36/OpenJDK20U-jdk_x64_mac_hotspot_20_36.tar.gz",
+                "version": "20.36.0",
+                "major": 20
+            },
+            {
+                "repoName": "adoptium/temurin20-binaries",
+                "name": "OpenJDK20U-jdk_x64_windows_hotspot_20_36.zip",
+                "url": "https://github.com/adoptium/temurin20-binaries/releases/download/jdk-20%2B36/OpenJDK20U-jdk_x64_windows_hotspot_20_36.zip",
+                "version": "20.36.0",
+                "major": 20
+            }
+        ]
+    }
+}
