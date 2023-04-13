@@ -1,99 +1,224 @@
-
 // run: gradle -Pver=17.0.4.1 release
 
-ext {
-    ver = project.getProperty("ver")
-    // https://adoptium.net/temurin/releases
-    versionMap = [
-        "17.0.4.1" : [
-            "linux-amd64" : [
-                url : "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.4.1%2B1/OpenJDK17U-jdk_x64_linux_hotspot_17.0.4.1_1.tar.gz",
-                downloadFileName : "OpenJDK17U-jdk_x64_linux_hotspot_17.0.4.1_1.tar.gz",
-            ],
-            "mac-amd64" : [
-                url : "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.4.1%2B1/OpenJDK17U-jdk_x64_mac_hotspot_17.0.4.1_1.tar.gz",
-                downloadFileName : "OpenJDK17U-jdk_x64_mac_hotspot_17.0.4.1_1.tar.gz",
-            ],
-            "windows-amd64" : [
-                url: "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.4.1%2B1/OpenJDK17U-jdk_x64_windows_hotspot_17.0.4.1_1.zip",
-                downloadFileName: "OpenJDK17U-jdk_x64_windows_hotspot_17.0.4.1_1.zip",
-            ],
-        ]
-    ]
-}
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath('com.vdurmont:semver4j:3.1.0')
+        classpath('org.kohsuke:github-api:1.123')
 
-task release(dependsOn: ['asset']) {
-    doLast {
-        def assetList = []
-        versionMap[ver].each { platform, vals ->
-            def assetName = "openjdk-${platform}-$ver"
-            def assetFileName = "${buildDir}/downloaded/${assetName}.tgz"
-            assetList += assetFileName
-        }
-        shell(cmd: "gh release create --generate-notes -t v$ver v$ver " + assetList.join(" "))
     }
 }
 
-task asset(dependsOn: ['downloadFile']) {
+import com.vdurmont.semver4j.Semver;
+import org.kohsuke.github.*
+
+
+
+ext {
+    github = GitHub.connectUsingOAuth(getProp('github.token', { getProp('gh.token') }))
+    archMap = [
+            "jdk_x64_linux_hotspot": "linux-amd64",
+            "jdk_aarch64_linux_hotspot": "linux-arm64",
+            "jdk_x64_mac_hotspot": "darwin-amd64",
+            "jdk_aarch64_mac_hotspot": "darwin-arm64",
+            "jdk_x64_windows_hotspot": "windows-amd64",
+        ];
+
+    validExtensions = [".zip", "tar.gz"];
+    versions = [8, 11, 16, 17, 19, 20];
+
+    releaseNfo = new groovy.json.JsonSlurper().parseText(file('.releases.txt').text)
+}
+
+task release() {
+    doLast { /* nothing to do*/ }
+}
+
+task buildAll() {
+    doLast { /* nothing to do*/ }
+}
+
+task clean() {
     doLast {
-        versionMap[ver].each { platform, vals ->
-            def downloadFileName = vals['downloadFileName']
-            def assetName = "openjdk-${platform}-$ver"
-            def assetDir = "${buildDir}/downloaded/$assetName"
+        delete buildDir
+    }
+}
+
+versions.each { major ->
+    releaseNfo["$major"].each { versionStr, assets ->
+
+    def releaseTask = defineReleaseTask(major, versionStr);
+    configure(release) { dependsOn += releaseTask.name; }
+    def uploadsTask = tasks.create(name: _taskName("uploads_$versionStr")) {}
+    tasks.named(releaseTask.name) { finalizedBy(uploadsTask.name) }
+
+        
+        assets.each { asset ->
+            def downloadAssetTask = defineDownloadAssetTask(asset);
+
+            //
+            def createAssetTask =  defineCreateAssetTask(asset);
+            configure(createAssetTask) { dependsOn += downloadAssetTask.name }
+
+            def uploadAssetTask = defineUploadTask(versionStr, asset);
+            configure(buildAll) { dependsOn += createAssetTask.name }
+            configure(uploadAssetTask) { dependsOn += createAssetTask.name }
+            configure(uploadsTask) { dependsOn += uploadAssetTask.name }
+        } // assets
+    }
+}
+
+def defineReleaseTask(major, releaseVersion) {
+    tasks.create(name: _taskName("release_V_$releaseVersion")) {
+        doLast {
+            shell(cmd: "gh release delete --cleanup-tag -y v$releaseVersion", throw: false)
+            shell(cmd: "git push origin :refs/tags/v$releaseVersion", throw: false)
+            shell(cmd: "git tag -d v$releaseVersion", throw: false)
+            //shell(cmd: "gh release create -d --generate-notes -t v$releaseVersion v$releaseVersion")
+            shell(cmd: "gh release create --generate-notes -t v$releaseVersion v$releaseVersion")
+        }
+    }
+}
+
+def defineUploadTask(releaseVersion, asset) {
+    def platform = osArch(asset.name);
+    def taskName = _taskName("upload_${platform}_V_$releaseVersion")
+    def uploadAssetTask = tasks.create(name: taskName) {
+        doLast {
+            def assetName = "openjdk-${platform}-v${releaseVersion}"
             def assetFileName = "${buildDir}/downloaded/${assetName}.tgz"
-            def fileName = "${buildDir}/downloaded/${downloadFileName}"
+            shell(cmd: "gh release upload v$releaseVersion $assetFileName")
+        }
+    }
+    configure(uploadAssetTask) {   
+        group = 'OpenJDK'
+        description = 'Upload Asset Task'
+    }
+    return uploadAssetTask;
+}
+
+def defineCreateAssetTask(asset) {
+    def platform = osArch(asset.name);
+    def createAssetTask = tasks.create(name: _taskName("create_asset_${platform}_${asset.major}")) {
+        doLast {
+            def downloadFileName = getFilePart(asset.url)
+            def assetName = "openjdk-${platform}-v${asset.version}"
+            def assetDir = file("${buildDir}/downloaded/$assetName")
+            def assetFileName = file("${buildDir}/downloaded/${assetName}.tgz")
+            def assetDirTmp = file("${assetDir}.tmp")
+            def fileName = file("${buildDir}/downloaded/${downloadFileName}")
             def isMac = false
-            if (platform.startsWith("mac")) {
+            if (platform.startsWith("darwin")) {
                 isMac = true
             }
 
             // uncompress to asset dir
-            if (!file(assetDir).exists()) {
-                if (fileName.contains('.zip')) { // unzip windows
-                    shell(cmd:"unzip $fileName", dir:"${buildDir}/downloaded" )
+            if (!assetDir.exists()) {
+                delete assetDirTmp
+                shell(cmd:"mkdir -p $assetDirTmp")
+                if (fileName.toString().contains('.zip')) { // unzip windows
+                    shell(cmd:"unzip $fileName", dir: assetDirTmp )
                 } else {
-                    shell(cmd:"tar xvfz $fileName", dir:"${buildDir}/downloaded" )
+                    shell(cmd:"tar xfz $fileName", dir: assetDirTmp )
                 }
-                shell(cmd:"mv jdk-17.0.4.1+1 $assetDir", dir:"${buildDir}/downloaded")
+                def files = assetDirTmp.listFiles()
+                def originalDirNameFromZip;
+                if (files.size() == 1) {
+                    originalDirNameFromZip = files[0]
+                } else if (files.size() > 1){
+                    originalDirNameFromZip = assetDirTmp
+                } else {
+                    throw new RuntimeException("Couldn't determine the directory name when uncompressing the file");
+                }
+
+                shell(cmd:"mv $originalDirNameFromZip $assetDir", dir:"${buildDir}/downloaded")
+
+                delete assetDirTmp
             }
 
             //
             writeBzFile("$assetDir/.bz", isMac)
+            writeBzFile("$assetDir/.bz.lock", isMac)
 
             // create asset tgz
             if (!file(assetFileName).exists()) {
-                shell(cmd:"tar cvfz ${assetFileName}.tmp .", dir: assetDir)
+                shell(cmd:"tar cfz ${assetFileName}.tmp .", dir: assetDir)
                 shell(cmd:"mv ${assetFileName}.tmp ${assetFileName}", dir: "${buildDir}/downloaded")
             }
         }
     }
+    configure(createAssetTask) {   
+        group = 'OpenJDK'
+        description = 'Create Asset Task'
+    }
+    return createAssetTask;
 }
 
-
-
-task downloadFile() {
-    doLast {
-        versionMap[ver].each { platform, vals ->
-            def downloadUrl = vals['url']
-            def downloadFileName = vals['downloadFileName']
+def defineDownloadAssetTask(asset) {
+    def platform = osArch(asset.name);
+    def downloadAssetTask = tasks.create(name: _taskName("download_${platform}_v_${asset.major}")) {
+        doLast {
+            def downloadUrl = asset.url;
+            def downloadFileName = getFilePart(downloadUrl)
             if (!file("${buildDir}/downloaded/${downloadFileName}").exists()) {
                 shell(cmd:"mkdir -p ${buildDir}/downloaded")
-                shell(cmd:"wget -O ${buildDir}/downloaded/${downloadFileName}.tmp ${downloadUrl}")
+                shell(cmd:"wget -q -O ${buildDir}/downloaded/${downloadFileName}.tmp ${downloadUrl}")
                 shell(cmd:"mv ${buildDir}/downloaded/${downloadFileName}.tmp ${buildDir}/downloaded/${downloadFileName}")
             }
         }
     }
+    configure(downloadAssetTask) {   
+        group = 'OpenJDK'
+        description = 'Download Asset Task'
+    }
+    return downloadAssetTask;
+}
+
+
+task update() {
+    doLast {
+        def versionMap = [:];
+        findGithubReleases({repoName, major, release, asset ->
+            println asset.name
+            println "     " + osArch(asset.name) + " : " +  newVersion(asset.name)
+            def versionStr = newVersion(asset.name).toString();
+            if (!versionMap[major]) { versionMap[major] = [:]; }
+            if (!versionMap[major][versionStr]) { versionMap[major][versionStr] = []; }
+
+            versionMap[major][versionStr] += [
+                repoName: repoName,
+                name: asset.name,
+                url: asset.getBrowserDownloadUrl(),
+                version: versionStr,
+                major: major,
+            ]
+
+        }) // findRelease
+        file('.releases.txt').text = new groovy.json.JsonBuilder(versionMap).toPrettyString();
+    } // doLast
+}
+
+def _taskName(name) {
+    return name.replace('-', '_')
+    .replace('.', '_').toLowerCase();
 }
 
 def shell(opts = [:]) {
     if (!opts.dir) { opts.dir = project.projectDir }
     if (!opts.env) { opts.env = System.env.entrySet().stream().map { "$it.key=$it.value"  }.collect().asList() }
+    if (!opts.containsKey("throw")) { opts.throw = true }
     opts.dir = file(opts.dir)
 
+    println opts.cmd
     def proc = opts.cmd.execute(opts.env, opts.dir)
     proc.consumeProcessOutput(System.out, System.err)
     if (proc.waitFor() != 0) {
-        throw new RuntimeException("command $cmd returned error")
+        if (opts.throw) {
+            throw new RuntimeException("command `$opts.cmd` returned error")
+        }
     }
 }
 
@@ -103,17 +228,127 @@ def writeBzFile(f, isMac) {
         macDir = "/Contents/Home"
     }
 
-def contents = '''
-deps = []
+    def m = [
+        "env": [
+            "JAVA_HOME": '${DIR}' + macDir,
+        ],
+        "binDir": '${JAVA_HOME}/bin',
+    ]
 
-export {
-    JAVA_HOME = "${DIR}'''+macDir+'''"
+
+    def builder = new groovy.json.JsonBuilder(m)
+    file(f).text = builder.toPrettyString()
 }
 
-desc {
-    binDir = "${JAVA_HOME}/bin"
+def getFilePart(url) {
+    def parts = url.split("/")
+    return parts[parts.size() - 1]
 }
 
-'''
-    file(f).text = contents
+
+
+
+
+def newVersion(name) {
+    // OpenJDK17U-debugimage_x64_windows_hotspot_17.0.6_10.zip
+    // OpenJDK20U-jdk_aarch64_linux_hotspot_20_36.tar.gz
+    def numbers = name?.split('_hotspot_')?[1]?.replace(".tar.gz", '')
+        .replace(".zip", '')
+        .replace('_', '.')
+        .replace('u', '.')
+        .replace('b', '.');
+
+    // if version is only major and minor number, append a zero at the end
+    def parts = numbers.split('\\.')
+    if (parts.size() < 3) {
+        parts += '0'
+    }
+    return new Semver(parts.join('.'));
+}
+
+def osArch(name) {
+    def ret = null;
+    for (k in archMap.keySet()) {
+        if (name.contains(k)) {
+            ret = archMap[k];
+            break;
+        }
+    }
+    return ret;
+}
+
+def findGithubReleases(closure) {
+    versions.each{ major ->
+        def repo = "adoptium/temurin$major-binaries";
+        ghReleaseLatest(repo, {release -> 
+            if (!release) { println "release not found $repo"; return; }
+            release.listAssets().each { asset ->
+                if (!asset) { println "asset not found $repo"; return; }
+                //println asset.name
+                for (ghPlatform in archMap.keySet()) {
+                    for (e in validExtensions) {
+                        if (asset.name.contains(ghPlatform) && asset.name.endsWith(e)) {
+                            closure(repo, major, release, asset)
+                            break;
+                        }
+                    }
+                }
+
+            } // list assets
+        });
+    } //
+}
+
+
+def ghReleaseLatest(repo, closure) {
+    closure(github.getRepository(repo).getLatestRelease())
+}
+def ghListReleases(repo, closure) {
+    for (release : github.getRepository(repo).getReleases()) {
+        def ret = closure(release)
+        if (rest instanceof Boolean && !rest) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+
+def getProp(key, closure) {
+    try {
+        return getProp(key)
+    } catch (Exception e) {}
+    return closure();
+}
+
+def getProp(key) {
+    def val = null;
+
+    //
+    def propKey = toPropKey(key)
+    if (System.properties.containsKey(propKey)) {
+        return System.properties.get(propKey);
+    }
+
+    //
+    def envKey = toEnvKey(key)
+    def env = System.getenv()
+    if (env.containsKey(envKey)) {
+        return env.get(envKey);
+    }
+
+	def rhaProps = loadProps(new File(System.properties.get("user.home") + "/.rha/config.properties"))
+    if (rhaProps.containsKey(propKey)) {
+        return rhaProps.get(propKey)
+    }
+
+    throw new RuntimeException("Environment variable `$envKey` or Property `$propKey` not found");
+}
+
+def toEnvKey(str) { return str.replace('.', '_') .replace('-', '_') .toUpperCase(); }
+def toPropKey(str) { return str.replace('-', '.') .replace('_', '.') .toLowerCase(); }
+def loadProps(File file) { def props = new Properties();
+    if (file.exists()) { file.withInputStream { props.load(it ); } }
+    return props;
 }
