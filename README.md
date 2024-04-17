@@ -6,7 +6,7 @@
 2. Create a `.bz` file in your root of your project with the following content:
     ```hcl
     deps = [
-        "github.com/bazurto/openjdk-v17.0.4.1"
+        "github.com/bazurto/openjdk-v21.0.2.13"
     ]
     ```
 3. Now you can execute java commands in your project. e.g.:
