@@ -218,5 +218,44 @@
                 "major": 20
             }
         ]
+    },
+    "21": {
+        "21.0.2.13": [
+            {
+                "repoName": "adoptium/temurin21-binaries",
+                "name": "OpenJDK21U-jdk_aarch64_linux_hotspot_21.0.2_13.tar.gz",
+                "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.2%2B13/OpenJDK21U-jdk_aarch64_linux_hotspot_21.0.2_13.tar.gz",
+                "version": "21.0.2.13",
+                "major": 21
+            },
+            {
+                "repoName": "adoptium/temurin21-binaries",
+                "name": "OpenJDK21U-jdk_aarch64_mac_hotspot_21.0.2_13.tar.gz",
+                "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.2%2B13/OpenJDK21U-jdk_aarch64_mac_hotspot_21.0.2_13.tar.gz",
+                "version": "21.0.2.13",
+                "major": 21
+            },
+            {
+                "repoName": "adoptium/temurin21-binaries",
+                "name": "OpenJDK21U-jdk_x64_linux_hotspot_21.0.2_13.tar.gz",
+                "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.2%2B13/OpenJDK21U-jdk_x64_linux_hotspot_21.0.2_13.tar.gz",
+                "version": "21.0.2.13",
+                "major": 21
+            },
+            {
+                "repoName": "adoptium/temurin21-binaries",
+                "name": "OpenJDK21U-jdk_x64_mac_hotspot_21.0.2_13.tar.gz",
+                "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.2%2B13/OpenJDK21U-jdk_x64_mac_hotspot_21.0.2_13.tar.gz",
+                "version": "21.0.2.13",
+                "major": 21
+            },
+            {
+                "repoName": "adoptium/temurin21-binaries",
+                "name": "OpenJDK21U-jdk_x64_windows_hotspot_21.0.2_13.zip",
+                "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.2%2B13/OpenJDK21U-jdk_x64_windows_hotspot_21.0.2_13.zip",
+                "version": "21.0.2.13",
+                "major": 21
+            }
+        ]
     }
 }

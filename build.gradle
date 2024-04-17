@@ -28,7 +28,7 @@ ext {
         ];
 
     validExtensions = [".zip", "tar.gz"];
-    versions = [8, 11, 16, 17, 19, 20];
+    versions = [8, 11, 16, 17, 19, 20, 21];
 
     releaseNfo = new groovy.json.JsonSlurper().parseText(file('.releases.txt').text)
 }
@@ -48,20 +48,27 @@ task clean() {
 }
 
 versions.each { major ->
+    def downloadMetaMajor = defineMetaTask("download_meta_$major");
+    def assetMetaMajor = defineMetaTask("asset_meta_$major");
+    def releaseMetaMajor = defineMetaTask("release_meta_$major");
+
     releaseNfo["$major"].each { versionStr, assets ->
+        def downloadMetaTask = defineMetaTask("download_meta_${major}_$versionStr", [downloadMetaMajor]);
+        def createAssetMetaTask = defineMetaTask("asset_meta_${major}_$versionStr", [assetMetaMajor]);
+        def releaseTask = defineReleaseTask(major, versionStr);
+        configure(release) { dependsOn += releaseTask.name; }
+        configure(releaseMetaMajor) { dependsOn += releaseTask.name; }
+        def uploadsTask = tasks.create(name: _taskName("uploads_$versionStr")) {}
+        tasks.named(releaseTask.name) { finalizedBy(uploadsTask.name) }
 
-    def releaseTask = defineReleaseTask(major, versionStr);
-    configure(release) { dependsOn += releaseTask.name; }
-    def uploadsTask = tasks.create(name: _taskName("uploads_$versionStr")) {}
-    tasks.named(releaseTask.name) { finalizedBy(uploadsTask.name) }
-
-        
         assets.each { asset ->
             def downloadAssetTask = defineDownloadAssetTask(asset);
+            configure(downloadMetaTask) {dependsOn += downloadAssetTask.name}
 
             //
             def createAssetTask =  defineCreateAssetTask(asset);
             configure(createAssetTask) { dependsOn += downloadAssetTask.name }
+            configure(createAssetMetaTask) { dependsOn += createAssetTask.name }
 
             def uploadAssetTask = defineUploadTask(versionStr, asset);
             configure(buildAll) { dependsOn += createAssetTask.name }
@@ -72,7 +79,7 @@ versions.each { major ->
 }
 
 def defineReleaseTask(major, releaseVersion) {
-    tasks.create(name: _taskName("release_V_$releaseVersion")) {
+    def tmp = tasks.create(name: _taskName("release_V_$releaseVersion")) {
         doLast {
             shell(cmd: "gh release delete --cleanup-tag -y v$releaseVersion", throw: false)
             shell(cmd: "git push origin :refs/tags/v$releaseVersion", throw: false)
@@ -80,6 +87,10 @@ def defineReleaseTask(major, releaseVersion) {
             //shell(cmd: "gh release create -d --generate-notes -t v$releaseVersion v$releaseVersion")
             shell(cmd: "gh release create --generate-notes -t v$releaseVersion v$releaseVersion")
         }
+    }
+    configure(tmp) {   
+        group = 'OpenJDK'
+        description = 'Release Task'
     }
 }
 
@@ -351,4 +362,20 @@ def toPropKey(str) { return str.replace('-', '.') .replace('_', '.') .toLowerCas
 def loadProps(File file) { def props = new Properties();
     if (file.exists()) { file.withInputStream { props.load(it ); } }
     return props;
+}
+
+def defineMetaTask(name, addToParentTask=[]) {
+    def metaTask = tasks.create(name: name) {
+        doLast {
+        }
+    }
+    configure(metaTask) {   
+        group = 'OpenJDK'
+        description = 'Meta Task'
+    }
+
+    addToParentTask.each {
+        configure(it) {dependsOn += metaTask.name}
+    }
+    return metaTask;
 }
