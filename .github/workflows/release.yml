@@ -20,4 +20,4 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: Gradle Release
-        run: ./gradlew release
+        run: ./gradlew release_meta_21

@@ -21,4 +21,4 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: Build
-        run: ./gradlew buildAll
+        run: ./gradlew asset_meta_21
