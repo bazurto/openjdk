@@ -19,5 +19,6 @@ jobs:
         uses: actions/setup-java@v4.2.1
         with:
           java-version: '17'
+          distribution: 'temurin'
       - name: Build
         run: ./gradlew asset_meta_21
